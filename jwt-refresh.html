@@ -1,0 +1,63 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<dom-module id="jwt-refresh">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+
+    <iron-ajax id="ajax"
+               url="{{url}}"
+               body='{"token": "{{token}}"}'
+               headers='{"Accept": "application/json", "Content-Type": "application/json"}'
+               method="POST"
+               handle-as="json"
+               on-response="_handleResponse"
+               on-error="_handleError"
+               debounce-duration="300">
+    </iron-ajax>
+
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        is: 'jwt-refresh',
+
+        properties: {
+
+          url: {
+            type: String
+          },
+
+          token: {
+            type: Object
+          }
+
+        },
+
+        refresh: function () {
+          this.$.ajax.generateRequest();
+        },
+
+        _handleResponse: function (data) {
+          this.fire('success', {
+            token: data.detail.response
+          });
+        },
+
+        _handleError: function (error) {
+          this.fire('error', {
+            response: error.detail.request.xhr.response
+          });
+        }
+
+      });
+    })();
+  </script>
+</dom-module>
